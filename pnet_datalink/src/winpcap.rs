@@ -253,12 +253,21 @@ impl DataLinkReceiver for DataLinkReceiverImpl {
                 }
             }
         }
-        let (start, len) = self.packets.pop_front().unwrap();
-        let slice = unsafe {
-            let data = (*self.packet.packet).Buffer as usize + start;
-            slice::from_raw_parts(data as *const u8, len)
-        };
-        Ok(slice)
+
+        // ret
+        match self.packets.pop_front() {
+            Some((start, len)) => unsafe {
+                let data = (*self.packet.packet).Buffer as usize + start;
+                Ok(slice::from_raw_parts(data as *const u8, len))
+            },
+            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "Somehow, No Packet is Received"))
+        }
+        // let (start, len) = self.packets.pop_front().unwrap();
+        // let slice = unsafe {
+        //     let data = (*self.packet.packet).Buffer as usize + start;
+        //     slice::from_raw_parts(data as *const u8, len)
+        // };
+        // Ok(slice)
     }
 }
 
