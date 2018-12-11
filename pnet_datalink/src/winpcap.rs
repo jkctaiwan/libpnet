@@ -277,6 +277,7 @@ pub fn interfaces() -> Vec<NetworkInterface> {
 
     let mut adapters_size = 0u32;
 
+    println!("winpcap::GetAdaptersInfo(&mut tmp, &mut adapters_size);");
     unsafe {
         let mut tmp: winpcap::IP_ADAPTER_INFO = mem::zeroed();
         // FIXME [windows] This only gets IPv4 addresses - should use
@@ -285,9 +286,11 @@ pub fn interfaces() -> Vec<NetworkInterface> {
     }
 
     let vec_size = adapters_size / mem::size_of::<winpcap::IP_ADAPTER_INFO>() as u32;
+    println!("vec_size = {:?}", vec_size);
 
     let mut adapters = Vec::with_capacity(vec_size as usize);
 
+    println!("winpcap::GetAdaptersInfo(adapters.as_mut_ptr(), &mut adapters_size);");
     // FIXME [windows] Check return code
     unsafe {
         winpcap::GetAdaptersInfo(adapters.as_mut_ptr(), &mut adapters_size);
