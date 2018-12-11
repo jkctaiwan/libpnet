@@ -295,7 +295,8 @@ pub fn interfaces() -> Vec<NetworkInterface> {
 
     // Create a complete list of NetworkInterfaces for the machine
     let mut cursor = adapters.as_mut_ptr();
-    let mut all_ifaces = Vec::with_capacity(vec_size as usize);
+    // Added 10 in case where function call return incorrect number on the first call
+    let mut all_ifaces = Vec::with_capacity((vec_size+10) as usize);
     while !cursor.is_null() {
         let mac = unsafe {
             MacAddr((*cursor).Address[0],
