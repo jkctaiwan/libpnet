@@ -286,7 +286,7 @@ pub fn interfaces() -> Vec<NetworkInterface> {
 
     let vec_size = adapters_size / mem::size_of::<winpcap::IP_ADAPTER_INFO>() as u32;
 
-    let mut adapters = Vec::with_capacity(vec_size as usize);
+    let mut adapters = Vec::with_capacity((vec_size+10) as usize);
 
     // FIXME [windows] Check return code
     unsafe {
@@ -296,7 +296,7 @@ pub fn interfaces() -> Vec<NetworkInterface> {
     // Create a complete list of NetworkInterfaces for the machine
     let mut cursor = adapters.as_mut_ptr();
     // Added 10 in case where function call return incorrect number on the first call
-    let mut all_ifaces = Vec::with_capacity((vec_size+10) as usize);
+    let mut all_ifaces = Vec::with_capacity(vec_size as usize);
     while !cursor.is_null() {
         let mac = unsafe {
             MacAddr((*cursor).Address[0],
