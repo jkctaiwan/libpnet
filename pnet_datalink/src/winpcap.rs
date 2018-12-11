@@ -308,10 +308,12 @@ pub fn interfaces() -> Vec<NetworkInterface> {
                     (*cursor).Address[4],
                     (*cursor).Address[5])
         };
+        println!("mac = {:?}", mac);
         let mut ip_cursor = unsafe { &mut (*cursor).IpAddressList as winpcap::PIP_ADDR_STRING };
         let mut ips = Vec::new();
         while !ip_cursor.is_null() {
             if let Ok(ip_network) = parse_ip_network(ip_cursor) {
+                println!("ip_network = {:?}", ip_network);
                 ips.push(ip_network);
             }
             ip_cursor = unsafe { (*ip_cursor).Next };
@@ -321,7 +323,9 @@ pub fn interfaces() -> Vec<NetworkInterface> {
             let name_str_ptr = (*cursor).AdapterName.as_ptr() as *const i8;
 
             let bytes = CStr::from_ptr(name_str_ptr).to_bytes();
+            println!("bytes = {:?}", bytes);
             let name_str = from_utf8_unchecked(bytes).to_owned();
+            println!("name_str = {:?}", name_str);
 
             all_ifaces.push(NetworkInterface {
                 name: name_str,
@@ -351,7 +355,9 @@ pub fn interfaces() -> Vec<NetworkInterface> {
 
 
     let buf_str = unsafe { from_utf8_unchecked(&buf) };
+    println!("buf_str = {:?}", buf_str);
     let iface_names = buf_str.split("\0\0").next();
+    println!("iface_names = {:?}", iface_names);
     let mut vec = Vec::new();
 
     // Return only supported adapters
@@ -359,6 +365,7 @@ pub fn interfaces() -> Vec<NetworkInterface> {
         Some(iface_names) => {
             for iface in iface_names.split('\0') {
                 let name = iface.to_owned();
+                println!("name = {:?}", name);
                 let next = all_ifaces.iter().filter(|x| name[..].ends_with(&x.name[..])).next();
                 if next.is_some() {
                     let mut iface = next.unwrap().clone();
@@ -370,6 +377,7 @@ pub fn interfaces() -> Vec<NetworkInterface> {
         None => (),
     };
 
+    println!("vec = {:?}", vec);
     vec
 }
 
